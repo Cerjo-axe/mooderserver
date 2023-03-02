@@ -10,11 +10,13 @@ public class AppDbContext : DbContext
     {}
 
     public DbSet<MoodDay> MoodDays {get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
         mb.Entity<MoodDay>(new MoodMap().Configure);
+        mb.Entity<User>(new UserMap().Configure);
     }
 
 }

@@ -14,6 +14,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>{
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpsRedirection(opts =>{
+    opts.HttpsPort=44350;
+});
 builder.Services.AddCors(options=>{
     options.AddDefaultPolicy(bd=>{
         bd.AllowAnyOrigin()
@@ -34,6 +37,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
