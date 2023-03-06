@@ -45,6 +45,23 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
+            throw ex;
+        }
+    }
+
+    public async Task<bool> CheckUserExists(string email)
+    {
+        try
+        {
+            var user = await _manager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return false;
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
             
             throw ex;
         }
