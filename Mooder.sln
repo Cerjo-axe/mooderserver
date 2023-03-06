@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infra.Cross", "Infra.Cross\Infra.Cross.csproj", "{F076BF84-66C8-4411-AE84-18DD9A233460}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mooder.UnitTests", "Mooder.UnitTests\Mooder.UnitTests.csproj", "{52A5F536-AFFB-4F9E-B51D-4EC97A5E05AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{F076BF84-66C8-4411-AE84-18DD9A233460}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F076BF84-66C8-4411-AE84-18DD9A233460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F076BF84-66C8-4411-AE84-18DD9A233460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52A5F536-AFFB-4F9E-B51D-4EC97A5E05AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52A5F536-AFFB-4F9E-B51D-4EC97A5E05AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52A5F536-AFFB-4F9E-B51D-4EC97A5E05AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52A5F536-AFFB-4F9E-B51D-4EC97A5E05AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
