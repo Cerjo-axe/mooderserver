@@ -3,6 +3,7 @@ using Domain.Entity;
 using Domain.Interfaces;
 using DTO;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Service.Validators;
 
@@ -36,9 +37,9 @@ public class UserService : IUserService
 
     public async Task<bool> Register(RegisterDTO newuser)
     {
-        Validate(newuser,Activator.CreateInstance<UserValidate>());
         try
         {
+            Validation(newuser,new UserValidator());
             User user = _mapper.Map<User>(newuser);
             var result = await _manager.CreateAsync(user,newuser.Password);  
             return result.Succeeded;
@@ -67,12 +68,20 @@ public class UserService : IUserService
         }
     }
 
-    private void Validate(RegisterDTO entity, AbstractValidator<RegisterDTO> validator)
+    private void Validation(RegisterDTO entity, AbstractValidator<RegisterDTO> validator)
     {
-        if(entity ==null){
-            throw new Exception("Registro não detectado");
-        }
+        try
+        {
+            if(entity ==null){
+                throw new ArgumentNullException("Formulário vazio.");
+            }
 
-        validator.ValidateAndThrow(entity);
+            validator.ValidateAndThrow(entity);     
+        }
+        catch (Exception ex)
+        {
+            
+            throw ex;
+        }
     }
 }

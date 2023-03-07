@@ -10,5 +10,6 @@ public class MooderProfile : Profile
     {
         CreateMap<MoodDay,MoodDayDTO>().ReverseMap();
         CreateMap<User,RegisterDTO>().ReverseMap();
+        CreateMap<User,LoginDTO>().ReverseMap();
     }
 }
