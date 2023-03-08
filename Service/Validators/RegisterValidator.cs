@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace Service.Validators;
 
-public class UserValidator : AbstractValidator<RegisterDTO>
+public class RegisterValidator : AbstractValidator<RegisterDTO>
 {
-    public UserValidator()
+    public RegisterValidator()
     {
         RuleFor(c=>c.UserName).NotEmpty().Length(10, 150).WithMessage("InvalidUserName");
 

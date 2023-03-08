@@ -13,11 +13,13 @@ public class UserService : IUserService
 {
     private readonly UserManager<User> _manager;
     private readonly IMapper _mapper;
+    private readonly SignInManager<User> _signin;
 
-    public UserService(UserManager<User> manager, IMapper mapper)
+    public UserService(UserManager<User> manager, IMapper mapper, SignInManager<User> signIn)
     {
         _manager = manager;
         _mapper = mapper;
+        _signin = signIn;
     }
 
     public Task Delete(string email)
@@ -25,21 +27,42 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
-    public Task Login(LoginDTO loguser)
+    public async Task<bool> Login(LoginDTO loguser)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Validation(loguser);
+            new LoginValidator().ValidateAndThrow(loguser);
+            var user = await  _manager.FindByEmailAsync(loguser.Email);
+            var result = await _signin.PasswordSignInAsync(user,loguser.Password,false,false);
+            return result.Succeeded;
+        }
+        catch (System.Exception)
+        {
+            
+            throw;
+        }
     }
 
-    public Task Logout()
+    public async Task Logout()
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _signin.SignOutAsync();
+        }
+        catch (Exception ex)
+        {
+            
+            throw ex;
+        }
     }
 
     public async Task<bool> Register(RegisterDTO newuser)
     {
         try
         {
-            Validation(newuser,new UserValidator());
+            Validation(newuser);
+            new RegisterValidator().ValidateAndThrow(newuser);
             User user = _mapper.Map<User>(newuser);
             var result = await _manager.CreateAsync(user,newuser.Password);  
             return result.Succeeded;
@@ -68,20 +91,10 @@ public class UserService : IUserService
         }
     }
 
-    private void Validation(RegisterDTO entity, AbstractValidator<RegisterDTO> validator)
+    private void Validation(UserDTO entity)
     {
-        try
-        {
-            if(entity ==null){
-                throw new ArgumentNullException("Formulário vazio.");
-            }
-
-            validator.ValidateAndThrow(entity);     
-        }
-        catch (Exception ex)
-        {
-            
-            throw ex;
-        }
+        if(entity ==null){
+            throw new ArgumentNullException("Formulário vazio.");
+        }   
     }
 }

@@ -6,7 +6,7 @@ public interface IUserService
 {
     Task<bool> Register(RegisterDTO newuser);
     Task<bool> CheckUserExists(string email);
-    Task Login(LoginDTO loguser);
+    Task<bool> Login(LoginDTO loguser);
     Task Logout();
     Task Delete(string email);
 }

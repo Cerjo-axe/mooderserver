@@ -2,12 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DTO;
 
-public class LoginDTO
+public class LoginDTO :UserDTO
 {
-    [Required]
-    public string Email { get; set; }
-
-    [Required]
-    public string Password { get; set; }
-
 }
