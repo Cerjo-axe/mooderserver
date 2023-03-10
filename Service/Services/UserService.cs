@@ -22,9 +22,19 @@ public class UserService : IUserService
         _signin = signIn;
     }
 
-    public Task Delete(string email)
+    public async Task<bool> Delete(string email)
     {
-        throw new NotImplementedException();
+        try
+        {
+            User user = await _manager.FindByEmailAsync(email);
+            var result = await _manager.DeleteAsync(user);
+            return result.Succeeded;
+        }
+        catch (Exception ex)
+        {
+            
+            throw ex;
+        }
     }
 
     public async Task<bool> Login(LoginDTO loguser)

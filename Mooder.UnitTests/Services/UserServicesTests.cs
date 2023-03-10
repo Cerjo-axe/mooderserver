@@ -4,6 +4,7 @@ using Domain.Entity;
 using DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Mooder.UnitTests.Helpers;
 using Service.Services;
 
 namespace Mooder.UnitTests.Services;
@@ -163,15 +164,8 @@ public class UserServicesTests
                         .ReturnsAsync(IdentityResult.Success);
         var mockSignInManager = GetMockSignInManager(mockUserManager);
         var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
-
-        RegisterDTO invalidUser = new RegisterDTO(){
-            UserName="teste",
-            Email="teste",
-            Password = "Teste#1234",
-            ConfirmPassword = "Teste#1234"
-        };
         // When
-        var exception = await Record.ExceptionAsync(()=> userService.Register(invalidUser));
+        var exception = await Record.ExceptionAsync(()=> userService.Register(DummyData.invalidUser1));
         // Then
         Assert.IsType<FluentValidation.ValidationException>(exception);
     }
@@ -346,9 +340,7 @@ public class UserServicesTests
         public async Task Delete_Success()
         {
             // Given
-            var config = new MapperConfiguration(cfg=>{
-                    cfg.CreateMap<User,LoginDTO>().ReverseMap();
-                });
+            var config = new MapperConfiguration(cfg=>{});
             var mapper = config.CreateMapper();
 
             var mockUserManager = GetMockUserManager();
@@ -357,7 +349,30 @@ public class UserServicesTests
                             .ReturnsAsync(IdentityResult.Success);
             var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
             // When
+            var result = await userService.Delete("teste");
             // Then
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task Delete_Failed()
+        {
+            // Given
+            var config = new MapperConfiguration(cfg=>{});
+            var mapper = config.CreateMapper();
+
+            var mockUserManager = GetMockUserManager();
+            var mockSignInManager = GetMockSignInManager(mockUserManager);
+            mockUserManager.Setup(service=>service.DeleteAsync(It.IsAny<User>()))
+                            .ReturnsAsync(IdentityResult.Failed(new IdentityError{
+                                Code="0001",
+                                Description = "Error"
+                            }));
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            // When
+            var result = await userService.Delete("teste");
+            // Then
+            Assert.False(result);
         }
     #endregion
 

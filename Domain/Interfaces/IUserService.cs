@@ -8,5 +8,5 @@ public interface IUserService
     Task<bool> CheckUserExists(string email);
     Task<bool> Login(LoginDTO loguser);
     Task Logout();
-    Task Delete(string email);
+    Task<bool> Delete(string email);
 }

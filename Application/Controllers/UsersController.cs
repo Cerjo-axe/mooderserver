@@ -27,6 +27,9 @@ public class UsersController : ControllerBase
             }
 
             var result = await _service.Register(user);
+            if(!result){
+                return BadRequest();
+            }
             return Ok();
         }
         catch (FluentValidation.ValidationException)
