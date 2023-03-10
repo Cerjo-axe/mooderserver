@@ -130,6 +130,34 @@ public class UsersControllerTests
         }
     #endregion
 
+    #region Logout
+        [Fact]
+        public async Task Logout_FailedToSignOut_BadRequest()
+        {
+            // Given
+            var mockUserService = GetMockUserService();
+            mockUserService.Setup(service=>service.Logout())
+                            .Throws(new Exception());
+            var sut = new UsersController(mockUserService.Object);
+            // When
+            var result = (BadRequestResult)await sut.Logout();
+            // Then
+            result.StatusCode.Should().Be(400);
+        }
+
+        [Fact]
+        public async Task Logout_FailedToSignOut_Ok()
+        {
+            // Given
+            var mockUserService = GetMockUserService();
+            mockUserService.Setup(service=>service.Logout());
+            var sut = new UsersController(mockUserService.Object);
+            // When
+            var result = (OkResult)await sut.Logout();
+            // Then
+            result.StatusCode.Should().Be(200);
+        }
+    #endregion
     private Mock<IUserService> GetMockUserService()
     {
         return new Mock<IUserService>();

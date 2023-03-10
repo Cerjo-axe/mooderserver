@@ -63,4 +63,17 @@ public class UsersController : ControllerBase
             return BadRequest(ModelState);
         }
     }
+    [HttpPost]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            _service.Logout();
+            return Ok();
+        }
+        catch (System.Exception)
+        {
+            return BadRequest();
+        }
+    }
 }
