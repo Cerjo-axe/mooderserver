@@ -16,4 +16,19 @@ public static class DummyData
                                 Password="senhai",
                                 ConfirmPassword="senhai"
                                                         };
+    public static RegisterDTO invalidUser2 = new RegisterDTO(){
+                                UserName="Teste",
+                                Email="emailinvalido",
+                                Password="senhai",
+                                ConfirmPassword="outracoisa"
+                                                        };
+
+    public static LoginDTO invalidLogin1 = new LoginDTO(){
+                            Email="emailinvalido",
+                            Password="senha"              
+                                        };
+    public static LoginDTO validLogin1 = new LoginDTO(){
+                            Email="valid@gmail.com",
+                            Password="Teste#1234"              
+                                        };
 }

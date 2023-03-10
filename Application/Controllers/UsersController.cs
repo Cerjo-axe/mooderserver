@@ -23,7 +23,13 @@ public class UsersController : ControllerBase
             var exists = await _service.CheckUserExists(user.Email);
             if (!exists)
             {
-                return BadRequest();
+                ModelState.AddModelError("Email","Email já utilizado por outro usuário");
+                return BadRequest(ModelState);
+            }
+            if(user.Password != user.ConfirmPassword)
+            {
+                ModelState.AddModelError("ConfirmPassword","Senhas não coincidem");
+                return BadRequest(ModelState);
             }
 
             var result = await _service.Register(user);
@@ -37,5 +43,24 @@ public class UsersController : ControllerBase
             return BadRequest();
         }
         
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] LoginDTO user)
+    {
+        try
+        {
+            var result = await _service.Login(user);
+            if(!result)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+        catch (FluentValidation.ValidationException)
+        {
+            ModelState.AddModelError("Login","Login inválido");
+            return BadRequest(ModelState);
+        }
     }
 }
