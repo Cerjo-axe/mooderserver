@@ -158,6 +158,35 @@ public class UsersControllerTests
             result.StatusCode.Should().Be(200);
         }
     #endregion
+
+    #region Delete
+        [Fact]
+        public async Task Delete_DeleteCurrentuser_Failed()
+        {
+            // Given
+            var mockUserService = GetMockUserService();
+            mockUserService.Setup(service=>service.Delete(It.IsAny<string>()))
+                            .ReturnsAsync(false);
+            var sut = new UsersController(mockUserService.Object);
+            // When
+            var result = (BadRequestResult) await sut.Delete("test");
+            // Then
+            result.StatusCode.Should().Be(400);
+        }
+        [Fact]
+        public async Task Delete_DeleteCurrentUser_Success()
+        {
+            // Given
+            var mockUserService = GetMockUserService();
+            mockUserService.Setup(service=>service.Delete(It.IsAny<string>()))
+                            .ReturnsAsync(true);
+            var sut = new UsersController(mockUserService.Object);
+            // When 
+            var result = (OkResult) await sut.Delete("test");
+            // Then
+            result.StatusCode.Should().Be(200);
+        }
+    #endregion
     private Mock<IUserService> GetMockUserService()
     {
         return new Mock<IUserService>();

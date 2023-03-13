@@ -76,4 +76,22 @@ public class UsersController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody] string email)
+    {
+        try
+        {
+            var result = await _service.Delete(email);
+            if(!result){
+                return BadRequest();
+            }
+            return Ok();
+        }
+        catch (System.Exception)
+        {
+            
+            return BadRequest(); 
+        }
+    }
 }
