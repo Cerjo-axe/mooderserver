@@ -22,5 +22,6 @@ public static class ServicesConfiguration
         //addservices
         services.AddScoped<IMoodDayRepository,MoodDayRepository>();
         services.AddScoped<IMoodDayService,MoodDayService>();
+        services.AddScoped<IUserService,UserService>();
     }
 }

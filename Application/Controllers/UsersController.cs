@@ -26,7 +26,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogInformation("Iniciando serviço de registro de usuário");
             var exists = await _service.CheckUserExists(user.Email);
-            if (!exists)
+            if (exists)
             {
                 _logger.LogWarning($"Usuario com email: {user.Email}, já existente");
                 ModelState.AddModelError("Email","Email já utilizado por outro usuário");
@@ -48,6 +48,7 @@ public class UsersController : ControllerBase
         }
         catch (FluentValidation.ValidationException)
         { 
+            _logger.LogError($"Erro de validação com o usuário {user.Email}");
             ModelState.AddModelError("Condições","Formulário com uma ou mais informações com má formatação");
             return BadRequest();
         }
@@ -76,6 +77,7 @@ public class UsersController : ControllerBase
             return BadRequest(ModelState);
         }
     }
+    [Route("logout")]
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
@@ -93,6 +95,7 @@ public class UsersController : ControllerBase
         }
     }
 
+    [Route("delete")]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromBody] string email)
     {
