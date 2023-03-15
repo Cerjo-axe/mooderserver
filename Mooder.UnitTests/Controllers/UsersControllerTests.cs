@@ -8,7 +8,7 @@ using Service.Services;
 
 namespace Mooder.UnitTests.Controllers;
 
-public class UsersControllerTests
+public class UsersControllerTests:IClassFixture<UsersController>
 {
     private readonly ILogger<UsersController> _logger;
 
