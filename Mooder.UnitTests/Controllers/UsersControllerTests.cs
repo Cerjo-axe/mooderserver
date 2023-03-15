@@ -27,7 +27,7 @@ public class UsersControllerTests
                             .ReturnsAsync(false);
             var sut = new UsersController(mockUserService.Object,_logger.Object);
             // When
-            var actresult = (BadRequestObjectResult)await sut.Register(DummyData.invalidUser1);
+            var actresult = (BadRequestResult)await sut.Register(DummyData.invalidUser1);
             // Then
             actresult.StatusCode.Should().Be(400);
         }
@@ -42,7 +42,7 @@ public class UsersControllerTests
                             .Throws(new FluentValidation.ValidationException("error"));
             var sut = new UsersController(mockUserService.Object,_logger.Object);
             // When
-            var actresult = (BadRequestResult)await sut.Register(DummyData.invalidUser1);
+            var actresult = (BadRequestObjectResult)await sut.Register(DummyData.invalidUser1);
             // Then
             actresult.StatusCode.Should().Be(400);  
         }
@@ -57,7 +57,7 @@ public class UsersControllerTests
                             .ReturnsAsync(false);
             var sut = new UsersController(mockUserService.Object,_logger.Object);
             // When
-            var actresult = (BadRequestResult)await sut.Register(DummyData.validUser1);
+            var actresult = (BadRequestObjectResult)await sut.Register(DummyData.validUser1);
             // Then
             actresult.StatusCode.Should().Be(400);
         }
@@ -84,7 +84,7 @@ public class UsersControllerTests
             // Given
             var mockUserService = GetMockUserService();
             mockUserService.Setup(service=>service.CheckUserExists(It.IsAny<string>()))
-                            .ReturnsAsync(true);
+                            .ReturnsAsync(false);
             mockUserService.Setup(service=>service.Register(It.IsAny<RegisterDTO>()))
                             .ReturnsAsync(true);
             var sut = new UsersController(mockUserService.Object,_logger.Object);
