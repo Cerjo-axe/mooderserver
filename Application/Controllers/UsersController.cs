@@ -57,19 +57,19 @@ public class UsersController : ControllerBase
 
     [Route("login")]
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] LoginDTO user)
+    public async Task<ActionResult> Login([FromBody] LoginDTO user)
     {
         try
         {
             _logger.LogInformation($"Iniciando serviço de Login do usuário {user.Email}");
             var result = await _service.Login(user);
-            if(!result)
+            if(result is null)
             {
                 _logger.LogError($"Falha no login do usuário {user.Email}");
                 return BadRequest();
             }
             _logger.LogInformation($"Sucesso no login do usuário {user.Email}");
-            return Ok();
+            return Ok(result);
         }
         catch (FluentValidation.ValidationException)
         {

@@ -26,4 +26,7 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infra.Cross\Infra.Cross.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Mooder.UnitTests\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

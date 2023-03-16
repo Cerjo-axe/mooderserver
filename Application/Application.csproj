@@ -3,6 +3,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>74f4b704-3a51-42f1-9bea-ab7353f477a2</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2"/>
@@ -10,6 +11,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3"/>
     <PackageReference Include="Serilog.AspNetCore" Version="6.1.0"/>
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4"/>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.27.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Infra.Cross\Infra.Cross.csproj"/>

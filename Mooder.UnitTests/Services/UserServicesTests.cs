@@ -4,6 +4,7 @@ using Domain.Entity;
 using DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Mooder.UnitTests.Helpers;
 using Service.Services;
 
@@ -11,6 +12,17 @@ namespace Mooder.UnitTests.Services;
 
 public class UserServicesTests
 {
+    private readonly IConfiguration Configuration;
+
+    public UserServicesTests()
+    {
+        var builder = new ConfigurationBuilder().
+        SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables();
+        Configuration = builder.Build();
+    }
+
     #region CheckUserExists
 
     [Fact]
@@ -26,7 +38,7 @@ public class UserServicesTests
         mockUserManager.Setup(service=>service.FindByEmailAsync(It.IsAny<string>()))
                         .ReturnsAsync(new User());
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         // When
         var result = await userService.CheckUserExists("teste");
         // Then
@@ -46,7 +58,7 @@ public class UserServicesTests
         mockUserManager.Setup(service=>service.FindByEmailAsync(It.IsAny<string>()))
                         .ReturnsAsync(new User());
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         // When
         var result = await userService.CheckUserExists("teste");
         // Then
@@ -66,7 +78,7 @@ public class UserServicesTests
         mockUserManager.Setup(service=>service.FindByEmailAsync(It.IsAny<string>()))
                         .ReturnsAsync((User) null);
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         // When
         var result = await userService.CheckUserExists("teste");
         // Then
@@ -89,7 +101,7 @@ public class UserServicesTests
         mockUserManager.Setup(service=>service.CreateAsync(It.IsAny<User>(),It.IsAny<string>()))
                         .ReturnsAsync(IdentityResult.Success);
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
 
         var user = new RegisterDTO(){
             UserName = "testecom8dig",
@@ -117,7 +129,7 @@ public class UserServicesTests
                                                             Code="0001",
                                                             Description="Error"}));
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
 
         var user = new RegisterDTO(){
             UserName = "testecom8dig",
@@ -144,7 +156,7 @@ public class UserServicesTests
         mockUserManager.Setup(service=>service.CreateAsync(It.IsAny<User>(),It.IsAny<string>()))
                         .ReturnsAsync(IdentityResult.Success);
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         // When
         var exception = await Record.ExceptionAsync(()=> userService.Register(null));
         // Then
@@ -163,7 +175,7 @@ public class UserServicesTests
         mockUserManager.Setup(service=>service.CreateAsync(It.IsAny<User>(),It.IsAny<string>()))
                         .ReturnsAsync(IdentityResult.Success);
         var mockSignInManager = GetMockSignInManager(mockUserManager);
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         // When
         var exception = await Record.ExceptionAsync(()=> userService.Register(DummyData.invalidUser1));
         // Then
@@ -176,7 +188,7 @@ public class UserServicesTests
     #region Login
         
         [Fact]
-        public async Task Login_ValidateUser_Succes()
+        public async Task Login_ValidateUser_Success()
         {
             // Given
             var config = new MapperConfiguration(cfg=>{
@@ -191,16 +203,23 @@ public class UserServicesTests
                                                                         It.IsAny<bool>(),
                                                                         false))
                              .ReturnsAsync(SignInResult.Success);
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            mockUserManager.Setup(service=>service.FindByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User(){
+                                UserName="Test",
+                                Id="1234",
+                                Email="dummy@test.com"
+                            });
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
 
             LoginDTO logUser = new LoginDTO(){
                 Email="Teste@gmail.com",
                 Password="Teste#1234"
             };
             // When
-            var result = userService.Login(logUser);
+            var result = await userService.Login(logUser);
             // Then
-            Assert.True(result.IsCompletedSuccessfully);
+            Assert.NotNull(result);
+            result.Should().BeOfType<string>();
         }
 
         [Fact]
@@ -219,7 +238,7 @@ public class UserServicesTests
                                                                         It.IsAny<bool>(),
                                                                         false))
                              .ReturnsAsync(SignInResult.Success);
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
 
             LoginDTO invalidUser = new LoginDTO(){
                 Email="Teste",
@@ -246,7 +265,7 @@ public class UserServicesTests
                                                                         It.IsAny<bool>(),
                                                                         false))
                              .ReturnsAsync(SignInResult.Success);
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
 
             // When
             var exception = await Record.ExceptionAsync(()=> userService.Login((LoginDTO) null));
@@ -269,7 +288,13 @@ public class UserServicesTests
                                                                         It.IsAny<bool>(),
                                                                         false))
                              .ReturnsAsync(SignInResult.Success);
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            mockUserManager.Setup(service=>service.FindByEmailAsync(It.IsAny<string>()))
+                            .ReturnsAsync(new User(){
+                                UserName="Test",
+                                Id="1234",
+                                Email="dummy@test.com"
+                            });
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         
             // When
             LoginDTO User = new LoginDTO(){
@@ -278,7 +303,7 @@ public class UserServicesTests
             };
             var result = await userService.Login(User);
             // Then
-            Assert.True(result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -297,7 +322,7 @@ public class UserServicesTests
                                                                         It.IsAny<bool>(),
                                                                         false))
                              .ReturnsAsync(SignInResult.Failed);
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         
             // When
             LoginDTO User = new LoginDTO(){
@@ -306,7 +331,7 @@ public class UserServicesTests
             };
             var result = await userService.Login(User);
             // Then
-            Assert.False(result);
+            Assert.Null(result);
         }
     #endregion
 
@@ -324,7 +349,7 @@ public class UserServicesTests
         var mockUserManager = GetMockUserManager();
         var mockSignInManager = GetMockSignInManager(mockUserManager);
         mockSignInManager.Setup(service=>service.SignOutAsync());
-        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+        var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
         // When
         Task signoutuser = userService.Logout();
         signoutuser.Wait();
@@ -347,7 +372,7 @@ public class UserServicesTests
             var mockSignInManager = GetMockSignInManager(mockUserManager);
             mockUserManager.Setup(service=>service.DeleteAsync(It.IsAny<User>()))
                             .ReturnsAsync(IdentityResult.Success);
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
             // When
             var result = await userService.Delete("teste");
             // Then
@@ -368,7 +393,7 @@ public class UserServicesTests
                                 Code="0001",
                                 Description = "Error"
                             }));
-            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object);
+            var userService = new UserService(mockUserManager.Object,mapper,mockSignInManager.Object, Configuration);
             // When
             var result = await userService.Delete("teste");
             // Then

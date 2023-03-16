@@ -1,6 +1,9 @@
+using System.Text;
 using Infra.Cross;
 using Infra.Data.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +26,25 @@ builder.Services.AddDbContext<AppDbContext>(options =>{
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Configure Authentication
+builder.Services.AddAuthentication()
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+options=>{
+    options.TokenValidationParameters = new TokenValidationParameters{
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JWT:key"])
+        )
+    };
+});
+
+
 
 /*builder.Services.AddHttpsRedirection(opts =>{
     opts.HttpsPort=44350;

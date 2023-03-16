@@ -115,7 +115,7 @@ public class UsersControllerTests
             // Given
             var mockUserService = GetMockUserService();
             mockUserService.Setup(service=>service.Login(It.IsAny<LoginDTO>()))
-                            .ReturnsAsync(false);
+                            .ReturnsAsync((string)null);
             var sut = new UsersController(mockUserService.Object,_logger.Object);
             // When
             var result = (BadRequestResult)await sut.Login(DummyData.validLogin1);
@@ -123,17 +123,18 @@ public class UsersControllerTests
             result.StatusCode.Should().Be(400);
         }
         [Fact]
-        public async Task Login_ValidLogin_Success()
+        public async Task Login_ValidLogin_SuccessReturnString()
         {
             // Given
             var mockUserService = GetMockUserService();
             mockUserService.Setup(service=>service.Login(It.IsAny<LoginDTO>()))
-                            .ReturnsAsync(true);
+                            .ReturnsAsync("teste");
             var sut = new UsersController(mockUserService.Object,_logger.Object);
             // When
-            var result = (OkResult)await sut.Login(DummyData.validLogin1);
+            var result = (OkObjectResult)await sut.Login(DummyData.validLogin1);
             // Then
             result.StatusCode.Should().Be(200);
+            result.Value.Should().BeOfType<string>();
         }
     #endregion
 

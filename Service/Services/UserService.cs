@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Domain.Entity;
 using Domain.Interfaces;
@@ -6,6 +7,10 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Service.Validators;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace Service.Services;
 
@@ -14,12 +19,14 @@ public class UserService : IUserService
     private readonly UserManager<User> _manager;
     private readonly IMapper _mapper;
     private readonly SignInManager<User> _signin;
+    private readonly IConfiguration _configuration;
 
-    public UserService(UserManager<User> manager, IMapper mapper, SignInManager<User> signIn)
+    public UserService(UserManager<User> manager, IMapper mapper, SignInManager<User> signIn, IConfiguration config)
     {
         _manager = manager;
         _mapper = mapper;
         _signin = signIn;
+        _configuration = config;
     }
 
     public async Task<bool> Delete(string email)
@@ -37,7 +44,7 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<bool> Login(LoginDTO loguser)
+    public async Task<string> Login(LoginDTO loguser)
     {
         try
         {
@@ -45,7 +52,13 @@ public class UserService : IUserService
             new LoginValidator().ValidateAndThrow(loguser);
             var user = await  _manager.FindByEmailAsync(loguser.Email);
             var result = await _signin.PasswordSignInAsync(user,loguser.Password,false,false);
-            return result.Succeeded;
+            if(result.Succeeded)
+            {
+                var token = GenerateToken(user);
+                return token;
+
+            }
+            return null;
         }
         catch (System.Exception)
         {
@@ -106,5 +119,29 @@ public class UserService : IUserService
         if(entity ==null){
             throw new ArgumentNullException("Formulário vazio.");
         }   
+    }
+
+    private string GenerateToken(User user)
+    {
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Name, user.UserName)
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var expiration = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JWT:Expiremin"]));
+
+        JwtSecurityToken token = new JwtSecurityToken(
+            issuer: _configuration["JWT:Issuer"],
+            audience: _configuration["JWT:Audience"],
+            claims: claims,
+            expires: expiration,
+            signingCredentials: creds);
+
+        var secToken = new JwtSecurityTokenHandler().WriteToken(token);
+        return secToken;
     }
 }
