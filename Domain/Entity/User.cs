@@ -4,5 +4,5 @@ namespace Domain.Entity;
 
 public class User:IdentityUser
 {
-    public IEnumerable<MoodDay>? MoodDays {get; set;}
+    public ICollection<MoodDay> MoodDays {get; set;}
 }

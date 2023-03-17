@@ -6,7 +6,7 @@ public interface IMoodDayRepository
 {
     Task Add(MoodDay obj);
     void Update(MoodDay obj);
-    void Delete(int id);
-    Task<IEnumerable<MoodDay>> GetByWeek();
-    Task<IEnumerable<MoodDay>> GetByMonth();
+    void Delete(MoodDay day);
+    Task<IEnumerable<MoodDay>> GetByWeek(Guid id, DateTime fromdate);
+    Task<IEnumerable<MoodDay>> GetByMonth(Guid id, DateTime fromdate);
 }

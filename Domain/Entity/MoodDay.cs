@@ -1,3 +1,5 @@
+using DTO;
+
 namespace Domain.Entity;
 
 public class MoodDay
@@ -13,29 +15,4 @@ public class MoodDay
     public User User { get; set; }
 }
 
-public enum MoodTypes
-{
-    Happy,
-    Sad,
-    Angry,
-    Anxious,
-    Neutral
-}
-public enum MusicGenres
-{
-    Rock,
-    Metal,
-    Pop,
-    Country,
-    Soul,
-    Sertanejo,
-    Eletrônica,
-    Clássica,
-    HipHop,
-    Regggae,
-    Jazz,
-    Blues,
-    Funk,
-    Folk,
-    Indie
-}
+

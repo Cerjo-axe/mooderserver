@@ -28,29 +28,27 @@ public class MoodDayRepository : IMoodDayRepository
         }
     }
 
-    public async void Delete(int id)
+    public async void Delete(MoodDay day)
     {
-        _context.Set<MoodDay>().Remove(await Get(id));
+        _context.Set<MoodDay>().Remove(day);
         await _context.SaveChangesAsync();
 
     }
 
-    public async Task<MoodDay> Get(int id)
+    public async Task<IEnumerable<MoodDay>> GetByWeek(Guid id, DateTime fromdate)
     {
-        return await _context.Set<MoodDay>().FindAsync(id);
+        var dateonly = fromdate.Date;
+        var queryable = _context.MoodDays.Where(x=> x.Date.Date >= dateonly);
+        queryable = queryable.Where(x=>x.UserId == id);
+        return await queryable.ToListAsync();
     }
 
-    public async Task<IEnumerable<MoodDay>> GetAll()
+    public async Task<IEnumerable<MoodDay>> GetByMonth(Guid id, DateTime fromdate)
     {
-        try
-        {
-            return await _context.MoodDays.ToListAsync();
-        }
-        catch (Exception ex)
-        {         
-            throw ex;
-        }
-        
+        var dateonly = fromdate.Date;
+        var queryable = _context.MoodDays.Where(x=> x.Date.Date >= dateonly);
+        queryable = queryable.Where(x=>x.UserId == id);
+        return await queryable.ToListAsync();
     }
 
     public async void Update(MoodDay obj)
