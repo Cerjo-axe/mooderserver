@@ -50,6 +50,12 @@ public class MoodDayRepository : IMoodDayRepository
         queryable = queryable.Where(x=>x.UserId == id);
         return await queryable.ToListAsync();
     }
+    public async Task<MoodDay> GetByDay(Guid id, DateTime fromdate)
+    {
+        var dateonly = fromdate.Date;
+        var queryable = await _context.Set<MoodDay>().AsNoTracking().SingleOrDefaultAsync(p=>p.Id==id && p.Date.Date==dateonly);
+        return queryable;
+    }
 
     public async void Update(MoodDay obj)
     {

@@ -9,4 +9,5 @@ public interface IMoodDayRepository
     void Delete(MoodDay day);
     Task<IEnumerable<MoodDay>> GetByWeek(Guid id, DateTime fromdate);
     Task<IEnumerable<MoodDay>> GetByMonth(Guid id, DateTime fromdate);
+    Task<MoodDay> GetByDay(Guid id, DateTime fromdate);
 }
